@@ -1,0 +1,22 @@
+<div class="space-y-2">
+  <% court.cameras.each do |camera| %>
+    <div class="flex justify-between items-center bg-zinc-900 px-3 py-2 rounded border border-zinc-700">
+      <span class="text-sm text-zinc-200">
+        🎥 <%= camera.camera_uid %>
+      </span>
+
+      <%= button_to "✖",
+        court_camera_path(court, camera),
+        method: :delete,
+        form: { data: { turbo_confirm: "Remove camera?" } },
+        class: "text-red-400 hover:text-red-300 text-sm" %>
+    </div>
+  <% end %>
+</div>
+
+<div class="mt-3">
+  <%= render "cameras/form",
+    court: court,
+    available_cameras: available_cameras %>
+</div>
+

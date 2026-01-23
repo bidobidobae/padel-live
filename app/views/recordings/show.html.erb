@@ -1,0 +1,14 @@
+<!-- app/views/recordings/show.html.erb -->
+<h1>
+  Court <%= @court.number %> —
+  Camera <%= @recording.camera.camera_uid%>
+</h1>
+
+<%= link_to "⬅ Kembali", court_recordings_path(@court) %>
+
+<hr>
+
+<video controls width="720">
+  <source src="<%= rails_blob_path(@recording.file_path, disposition: "inline") rescue @recording.file_path %>" type="video/mp4">
+</video>
+

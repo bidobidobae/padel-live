@@ -1,0 +1,55 @@
+<!-- app/views/lives/_score.html.erb -->
+<div
+  id="score"
+  class="flex flex-col items-center justify-center min-h-screen bg-zinc-900 text-zinc-100"
+>
+  <!-- SCORE ROW -->
+  <div class="flex items-center w-full px-12">
+    <!-- SIDE A -->
+    <div class="flex-1 text-center">
+      <div class="uppercase tracking-widest text-zinc-400 mb-4 text-[2vh]">
+        Side A
+      </div>
+      <div
+        class="font-extrabold text-sky-400 leading-none"
+        style="font-size: min(40vh, 40vw);"
+      >
+        <%= score[:a] %>
+      </div>
+    </div>
+
+    <!-- COLON -->
+    <div
+      class="mx-6 font-extrabold text-zinc-400 leading-none"
+      style="font-size: min(30vh, 20vw);"
+    >
+      :
+    </div>
+
+    <!-- SIDE B -->
+    <div class="flex-1 text-center">
+      <div class="uppercase tracking-widest text-zinc-400 mb-4 text-[2vh]">
+        Side B
+      </div>
+      <div
+        class="font-extrabold text-emerald-400 leading-none"
+        style="font-size: min(40vh, 40vw);"
+      >
+        <%= score[:b] %>
+      </div>
+    </div>
+  </div>
+
+  <!-- WINNER -->
+  <% if score[:winner] %>
+    <div class="mt-[5vh] text-center animate-pulse">
+      <div
+        class="font-bold text-emerald-400"
+        style="font-size: 6vh;"
+      >
+        SIDE <%= score[:winner].to_s.upcase %> WIN 🏆
+      </div>
+    </div>
+  <% end %>
+</div>
+

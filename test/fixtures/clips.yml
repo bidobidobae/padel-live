@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  recording: one
+  side: MyString
+  from_time: 2026-01-10 21:46:56
+  to_time: 2026-01-10 21:46:56
+  file_path: MyString
+
+two:
+  recording: two
+  side: MyString
+  from_time: 2026-01-10 21:46:56
+  to_time: 2026-01-10 21:46:56
+  file_path: MyString

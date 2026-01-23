@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  court: one
+  camera_uid: MyString
+  active: false
+
+two:
+  court: two
+  camera_uid: MyString
+  active: false

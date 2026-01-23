@@ -1,0 +1,64 @@
+<!-- app/views/courts/index.html.erb -->
+<h2 class="text-2xl font-semibold mb-6 text-zinc-100">
+  Courts Management
+</h2>
+
+<!-- Flash -->
+<% flash.each do |type, message| %>
+  <div class="mb-4 px-4 py-2 rounded
+    <%= type == "notice" ? "bg-emerald-900 text-emerald-300" : "bg-red-900 text-red-300" %>">
+    <%= message %>
+  </div>
+<% end %>
+
+<!-- Generate Courts -->
+<div class="mb-8 bg-zinc-800 p-4 rounded border border-zinc-700">
+  <%= form_with url: courts_path, method: :post, class: "flex gap-3 items-center" do %>
+    <%= number_field_tag :total, nil,
+      min: 1,
+      placeholder: "Jumlah court",
+      class: "bg-zinc-900 border border-zinc-700 rounded px-3 py-2 w-40" %>
+
+    <%= submit_tag "Generate",
+      class: "bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded font-medium" %>
+  <% end %>
+</div>
+
+<!-- Courts Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+  <% @courts.each do |court| %>
+    <div class="bg-zinc-800 border border-zinc-700 rounded-lg p-5 flex flex-col gap-4">
+
+      <!-- Header -->
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-semibold text-sky-400">
+          Court <%= court.number %>
+        </h3>
+
+        <%= link_to "Live",
+          life_path(court),
+          class: "text-xs bg-sky-600/20 text-sky-300 px-3 py-1 rounded-full hover:bg-sky-600/30" %>
+      </div>
+
+      <!-- Cameras -->
+      <turbo-frame id="court_<%= court.id %>_cameras">
+        <%= render "cameras/list",
+          court: court,
+          available_cameras: @available_cameras %>
+      </turbo-frame>
+
+      <!-- Footer -->
+      <div class="flex justify-between text-sm">
+        <%= link_to "🎥 Recordings",
+          court_recordings_path(court),
+          class: "text-purple-400 hover:underline" %>
+
+        <span class="text-zinc-400">
+          <%= court.cameras.count %> camera
+        </span>
+      </div>
+
+    </div>
+  <% end %>
+</div>
+

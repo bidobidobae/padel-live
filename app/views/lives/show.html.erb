@@ -1,0 +1,7 @@
+<!-- app/views/lives/show.html.erb -->
+<div class="bg-zinc-900 min-h-screen">
+  <%= turbo_stream_from "court_#{@court.id}" %>
+
+  <%= render "score", score: @score %>
+</div>
+

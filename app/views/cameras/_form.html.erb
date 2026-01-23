@@ -1,0 +1,19 @@
+<%= form_with url: court_cameras_path(court),
+  data: { turbo_frame: "court_#{court.id}_cameras" },
+  class: "flex gap-2 mt-2" do %>
+
+  <%= select_tag :camera_info,
+    grouped_options_for_select(
+      available_cameras.each_with_object({}) { |cam, h|
+        next if cam[:devices].blank?
+        h["#{cam[:name]} (#{cam[:uid]})"] =
+          cam[:devices].map { |dev| ["#{dev}", "#{cam[:uid]}|#{dev}"] }
+      }
+    ),
+    include_blank: "Select camera",
+    class: "bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-sm flex-1" %>
+
+  <%= submit_tag "Add",
+    class: "bg-emerald-600 hover:bg-emerald-500 text-white px-4 rounded text-sm" %>
+<% end %>
+

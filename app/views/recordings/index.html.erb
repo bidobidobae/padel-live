@@ -1,0 +1,77 @@
+<!-- app/views/recordings/index.html.erb -->
+<div class="min-h-screen bg-zinc-900 text-zinc-100 p-6">
+  <!-- HEADER -->
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold mb-2">
+      🎥 Rekaman Court <span class="text-purple-400"><%= @court.number %></span>
+    </h1>
+
+    <%= link_to "← Kembali ke Courts",
+      courts_path,
+      class: "inline-flex items-center gap-2 text-sky-400 hover:underline text-sm"
+    %>
+  </div>
+
+  <hr class="border-zinc-700 mb-6">
+
+  <% if @recordings.any? %>
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <% @recordings.each do |rec| %>
+        <div class="bg-zinc-800 border border-zinc-700 rounded-2xl p-4 shadow-lg">
+          <!-- META -->
+          <div class="mb-3 text-sm text-zinc-400 space-y-1">
+            <div>
+              🎥 Camera
+              <span class="font-medium text-zinc-100">
+                <%= rec.camera.camera_uid %>
+              </span>
+            </div>
+
+            <div>
+              🕒 Mulai:
+              <span class="text-zinc-100">
+                <%= rec.started_at&.strftime("%d %b %Y %H:%M:%S") %>
+              </span>
+            </div>
+
+            <div>
+              ⏹️ Stop:
+              <span class="text-zinc-100">
+                <%= rec.stopped_at&.strftime("%d %b %Y %H:%M:%S") %>
+              </span>
+            </div>
+          </div>
+
+          <!-- VIDEO -->
+          <video
+            controls
+            preload="metadata"
+            class="w-full rounded-xl border border-zinc-700 bg-black"
+          >
+            <source
+              src="<%= court_recording_path(@court, rec) %>"
+              type="video/mp4"
+            >
+            Browser kamu tidak mendukung video tag.
+          </video>
+
+          <!-- ACTION -->
+          <div class="mt-3 text-right">
+            <%= link_to "Buka di Tab Baru ↗",
+              court_recording_path(@court, rec),
+              target: "_blank",
+              class: "text-sky-400 hover:underline text-sm"
+            %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <!-- EMPTY STATE -->
+    <div class="text-center text-zinc-400 mt-20">
+      <div class="text-5xl mb-4">📼</div>
+      <p class="text-lg">Belum ada rekaman untuk court ini.</p>
+    </div>
+  <% end %>
+</div>
+

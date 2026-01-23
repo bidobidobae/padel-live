@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Padel Live" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", type: "module" %>
+  </head>
+
+  <body class="bg-zinc-900 text-zinc-100 min-h-screen">
+    <header class="bg-zinc-950 border-b border-zinc-800">
+      <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-semibold text-purple-400">
+          Padel Live
+        </h1>
+        <span class="text-sm text-zinc-400">
+          Real-time Court Dashboard
+        </span>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-6">
+      <%= yield %>
+    </main>
+  </body>
+</html>
+

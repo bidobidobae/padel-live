@@ -1,0 +1,48 @@
+<!-- app/views/lives/_replay.html.erb -->
+<div
+  id="score"
+  class="fixed inset-0 bg-black flex items-center justify-center"
+>
+  <video
+    id="replay-video"
+    class="w-full h-full object-contain bg-black"
+    autoplay
+    playsinline
+    muted
+  >
+    <source
+      src="<%= court_recording_path(recording.court, recording) %>"
+      type="video/mp4"
+    >
+  </video>
+
+  <!-- Overlay info -->
+  <div class="absolute top-4 left-4 text-zinc-400 text-sm">
+    🎥 Replay • Court <%= recording.court.number %>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const video = document.getElementById("replay-video");
+    if (!video) return;
+
+    // fallback safety (kalau video error / terlalu cepat)
+    const BACK_DELAY = 10000;
+
+    const backToScore = () => {
+      fetch("<%= back_to_score_life_path(recording.court) %>", {
+        method: "POST",
+        headers: {
+          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
+        }
+      });
+    };
+
+    video.addEventListener("ended", backToScore);
+    video.addEventListener("error", backToScore);
+
+    setTimeout(backToScore, BACK_DELAY);
+  })();
+</script>
+

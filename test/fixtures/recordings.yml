@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  court: one
+  camera: one
+  active: false
+  started_at: 2026-01-10 21:46:42
+  stopped_at: 2026-01-10 21:46:42
+
+two:
+  court: two
+  camera: two
+  active: false
+  started_at: 2026-01-10 21:46:42
+  stopped_at: 2026-01-10 21:46:42
