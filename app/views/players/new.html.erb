@@ -1,0 +1,26 @@
+<div class="max-w-md mx-auto mt-10 bg-zinc-800 p-6 rounded">
+
+  <h2 class="text-lg font-bold text-sky-400 mb-4">
+    Add Player
+  </h2>
+
+  <%= form_with model: @player do |f| %>
+
+    <div class="mb-4">
+      <%= f.text_field :name,
+        placeholder: "Player name",
+        class: "w-full bg-zinc-900 border border-zinc-700 rounded px-3 py-2" %>
+    </div>
+
+    <div class="flex justify-end gap-2">
+      <%= link_to "Cancel", players_path,
+        class: "text-zinc-400" %>
+
+      <%= f.submit "Save",
+        class: "bg-emerald-600 px-4 py-2 rounded text-white" %>
+    </div>
+
+  <% end %>
+
+</div>
+

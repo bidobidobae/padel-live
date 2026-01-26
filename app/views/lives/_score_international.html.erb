@@ -1,0 +1,99 @@
+<div id="score" class="min-h-screen w-full bg-zinc-900 text-zinc-100 flex flex-col justify-center px-[3vw]">
+  <% if score[:started] %>
+    <div class="font-black text-emerald-400 animate-pulse mt-[2vh]"
+         style="font-size: 7vh;">
+      MATCH STARTED
+    </div>
+  <% else %>
+    <div class="font-black text-emerald-400 animate-pulse mt-[2vh]"
+         style="font-size: 7vh;">
+      WAITING
+    </div>
+  <% end %>
+
+
+  <!-- HEADER -->
+  <div class="grid grid-cols-4 text-center border-b border-zinc-700 pb-[2vh] mb-[3vh] uppercase tracking-widest font-bold text-zinc-400"
+       style="font-size: 4vh;">
+
+    <div class="text-left pl-[1vw]">Player</div>
+    <div>Set</div>
+    <div>Game</div>
+    <div>Point</div>
+
+  </div>
+
+  <!-- SIDE A -->
+  <div class="grid grid-cols-4 items-center border-b border-zinc-800 py-[3vh]">
+
+    <div class="text-left pl-[1vw] font-extrabold text-sky-400"
+         style="font-size: 6vh;">
+      <%= court.side_label(:a) %>
+    </div>
+
+    <div class="text-center font-extrabold" style="font-size: 8vh;">
+      <%= score[:sets_a] || 0 %>
+    </div>
+
+    <div class="text-center font-extrabold" style="font-size: 8vh;">
+      <%= score[:games_a] || 0 %>
+    </div>
+
+    <div class="text-center font-black text-sky-400"
+         style="font-size: 12vh;">
+      <%= score[:a] %>
+    </div>
+
+  </div>
+
+  <!-- SIDE B -->
+  <div class="grid grid-cols-4 items-center py-[3vh]">
+
+    <div class="text-left pl-[1vw] font-extrabold text-emerald-400"
+         style="font-size: 6vh;">
+      <%= court.side_label(:b) %>
+    </div>
+
+    <div class="text-center font-extrabold" style="font-size: 8vh;">
+      <%= score[:sets_b] || 0 %>
+    </div>
+
+    <div class="text-center font-extrabold" style="font-size: 8vh;">
+      <%= score[:games_b] || 0 %>
+    </div>
+
+    <div class="text-center font-black text-emerald-400"
+         style="font-size: 12vh;">
+      <%= score[:b] %>
+    </div>
+
+  </div>
+
+  <!-- STATUS -->
+  <div class="mt-[4vh] flex flex-col items-center gap-[2vh]">
+
+    <% if score[:a] == 40 && score[:b] == 40 && score[:winner].nil? %>
+      <div class="font-bold text-yellow-400 animate-pulse"
+           style="font-size: 5vh;">
+        DEUCE
+      </div>
+    <% end %>
+
+    <% if score[:advantage].present? %>
+      <div class="font-bold text-purple-400 animate-pulse"
+           style="font-size: 5vh;">
+        ADVANTAGE SIDE <%= score[:advantage].to_s.upcase %>
+      </div>
+    <% end %>
+
+    <% if score[:winner] %>
+      <div class="font-black text-emerald-400 animate-pulse mt-[2vh]"
+           style="font-size: 7vh;">
+        SIDE <%= score[:winner].to_s.upcase %> WIN 🏆
+      </div>
+    <% end %>
+
+  </div>
+
+</div>
+

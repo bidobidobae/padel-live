@@ -1,0 +1,22 @@
+<div class="max-w-xl mx-auto mt-10">
+
+  <div class="flex justify-between mb-4">
+    <h2 class="text-xl font-bold text-sky-400">Players</h2>
+
+    <%= link_to "Add Player",
+      new_player_path,
+      class: "bg-emerald-600 px-4 py-2 rounded text-white" %>
+  </div>
+
+  <div class="bg-zinc-800 rounded divide-y divide-zinc-700">
+
+    <% @players.each do |p| %>
+      <div class="p-3">
+        <%= p.name %>
+      </div>
+    <% end %>
+
+  </div>
+
+</div>
+

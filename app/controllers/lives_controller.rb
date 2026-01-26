@@ -4,7 +4,7 @@ class LivesController < ApplicationController
 
   def show
     @court = Court.find(params[:id])
-    @score = read_score(@court.id)
+    @score = read_score(@court)
   end
 
   def point_a
@@ -25,7 +25,8 @@ class LivesController < ApplicationController
 
   def start
     @court = Court.find(params[:id])
-    score  = read_score(@court.id)
+
+    score = read_score(@court)
 
     # JANGAN START LAGI JIKA MASIH STARTED
     if score[:started]
@@ -33,7 +34,13 @@ class LivesController < ApplicationController
       return head :ok
     end
 
-    # === START RECORDING ===
+    # ===== RESET STATE MATCH BARU =====
+    score = ScoreState.default_for(@court)
+    score[:started] = true
+
+    write_score(@court.id, score)
+
+    # ===== START RECORDING =====
     @court.cameras.each do |camera|
       rec = Recording.create!(
         court: @court,
@@ -41,17 +48,15 @@ class LivesController < ApplicationController
         active: true
       )
 
-      CameraRecorder.new(rec).start!
-    end
+      recorder = CameraRecorder.new(rec)
+      recorder.start! if recorder.camera_available?
 
-    score[:started] = true
-    write_score(@court.id, score)
+    end
 
     @score = score
     broadcast_score!
     head :ok
   end
-
 
   def reset
     @court = Court.find(params[:id])
@@ -60,7 +65,8 @@ class LivesController < ApplicationController
       CameraRecorder.new(rec).stop!
     end
 
-    @score = { a: 0, b: 0, winner: nil, started: false }
+    @score = ScoreState.default_for(@court)
+
     write_score(@court.id, @score)
 
     broadcast_score!
@@ -69,76 +75,86 @@ class LivesController < ApplicationController
 
   def back_to_score
     @court = Court.find(params[:id])
-    @score = read_score(@court.id)
+    @score = read_score(@court)
 
     broadcast_score!
     head :ok
   end
 
+  def with_score_lock(court_id)
+    key = "lock:court:#{court_id}"
+    return unless Rails.cache.write(key, true, unless_exist: true, expires_in: 2)
+
+    yield
+  ensure
+    Rails.cache.delete(key)
+  end
+
+
   private
 
   def change_score(side, delta)
     @court = Court.find(params[:id])
-    score  = read_score(@court.id)
 
-    return head :ok unless score[:started]
+    with_score_lock(@court.id) do
+      score = read_score(@court)
 
-    return head :ok if score[:winner].present?
+      return if !score[:started]
+      return if score[:winner].present?
 
-    # Update score dulu
-    score[side] = [score[side] + delta, 0].max
-    total = score[:a] + score[:b]
+      last_recording = @court.recordings.where(active: true).order(created_at: :desc).first
 
-    if total >= 21
-      score[:winner] = score[:a] > score[:b] ? :a : :b
-    else
-      score[:winner] = nil
-    end
+      score = ScoreEngine.apply(
+        score: score,
+        court: @court,
+        side: side,
+        delta: delta
+      )
 
-    write_score(@court.id, score)
+      write_score(@court.id, score)
 
-    last_recording = @court.recordings.where(active: true).order(created_at: :desc).first
-
-    if last_recording
       @court.recordings.where(active: true).each do |rec|
         CameraRecorder.new(rec).stop!
       end
-    end
 
-    sleep 0.2
+      sleep 0.15
 
-    # START recording BARU kalau belum ada winner
-    if score[:winner].nil?
-      @court.cameras.each do |camera|
-        rec = Recording.create!(
-          court: @court,
-          camera: camera,
-          active: true
-        )
+      if score[:winner].nil?
+        @court.cameras.each do |camera|
+          rec = Recording.create!(court: @court, camera: camera, active: true)
+          recorder = CameraRecorder.new(rec)
+          recorder.start! if recorder.camera_available?
+        end
+      end
 
-        CameraRecorder.new(rec).start!
+      @score = score
+
+      if score[:winner].present? && last_recording&.file_path.present?
+        broadcast_replay!(last_recording)
+      else
+        broadcast_score!
       end
     end
 
-    @score = score
-
-    # broadcast replay ATAU score
-    if score[:winner].present? && last_recording&.file_path.present?
-      broadcast_replay!(last_recording)
-    else
-      broadcast_score!
-    end
     head :ok
   end
-
 
   def score_key(court_id)
     "court:#{court_id}:score"
   end
 
-  def read_score(court_id)
-    Rails.cache.fetch(score_key(court_id)) { { a: 0, b: 0, winner: nil, started: false } }
+  def read_score(court)
+    score = Rails.cache.read(score_key(court.id))
+
+    return score if score.present?
+
+    # hanya fallback kalau benar-benar kosong (fresh court)
+    new_score = ScoreState.default_for(court)
+    Rails.cache.write(score_key(court.id), new_score)
+
+    new_score
   end
+
 
   def write_score(court_id, score)
     Rails.cache.write(score_key(court_id), score)
@@ -149,7 +165,7 @@ class LivesController < ApplicationController
       "court_#{@court.id}",
       target: "score",
       partial: "lives/score",
-      locals: { score: @score }
+      locals: { score: @score, court: @court }
     )
   end
 

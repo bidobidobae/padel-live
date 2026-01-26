@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_11_102313) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_24_234713) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -24,9 +24,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_11_102313) do
     t.index ["court_id"], name: "index_cameras_on_court_id"
   end
 
+  create_table "court_players", force: :cascade do |t|
+    t.bigint "court_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "player_id", null: false
+    t.integer "position"
+    t.string "side"
+    t.datetime "updated_at", null: false
+    t.index ["court_id"], name: "index_court_players_on_court_id"
+    t.index ["player_id"], name: "index_court_players_on_player_id"
+  end
+
   create_table "courts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "number"
+    t.string "score_mode"
+    t.jsonb "score_settings"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "players", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name"
     t.datetime "updated_at", null: false
   end
 
@@ -44,6 +63,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_11_102313) do
   end
 
   add_foreign_key "cameras", "courts"
+  add_foreign_key "court_players", "courts"
+  add_foreign_key "court_players", "players"
   add_foreign_key "recordings", "cameras"
   add_foreign_key "recordings", "courts"
 end

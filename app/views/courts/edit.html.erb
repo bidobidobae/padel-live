@@ -1,0 +1,118 @@
+<div class="max-w-xl mx-auto mt-10 bg-zinc-800 p-6 rounded">
+
+  <h2 class="text-xl font-bold mb-4 text-sky-400">
+    Court <%= @court.number %> Score Settings
+  </h2>
+
+  <%= form_with model: @court do |f| %>
+
+    <% if @court.score_mode == "americano" %>
+
+      <div class="mb-4">
+        <label class="block text-sm text-zinc-400 mb-1">
+          Target Point
+        </label>
+
+        <%= number_field_tag "court[target]",
+          @court.score_settings["target"],
+          min: 1,
+          class: "w-full bg-zinc-900 border border-zinc-700 rounded px-3 py-2" %>
+      </div>
+
+    <% else %>
+
+      <div class="mb-3">
+        <label class="block text-sm text-zinc-400 mb-1">
+          Sets To Win
+        </label>
+
+        <%= number_field_tag "court[sets_to_win]",
+          @court.score_settings["sets_to_win"],
+          min: 1,
+          class: "w-full bg-zinc-900 border border-zinc-700 rounded px-3 py-2" %>
+      </div>
+
+      <div class="mb-3">
+        <label class="block text-sm text-zinc-400 mb-1">
+          Games Per Set
+        </label>
+
+        <%= number_field_tag "court[games_per_set]",
+          @court.score_settings["games_per_set"],
+          min: 1,
+          class: "w-full bg-zinc-900 border border-zinc-700 rounded px-3 py-2" %>
+      </div>
+
+      <div class="mb-3 flex items-center gap-2">
+        <%= check_box_tag "court[deuce]", "1", @court.score_settings["deuce"] %>
+        <label class="text-sm text-zinc-400">Enable Deuce</label>
+      </div>
+
+      <div class="mb-3 flex items-center gap-2">
+        <%= check_box_tag "court[advantage]", "1", @court.score_settings["advantage"] %>
+        <label class="text-sm text-zinc-400">Enable Advantage</label>
+      </div>
+
+    <% end %>
+
+    <hr class="my-6 border-zinc-700">
+
+    <h3 class="text-lg font-bold text-sky-400 mb-3">
+      Players Assignment
+    </h3>
+
+    <% players = Player.order(:name) %>
+
+    <div class="grid grid-cols-2 gap-4">
+
+      <!-- SIDE A -->
+      <div>
+        <div class="text-zinc-400 mb-2">Side A</div>
+
+        <% 2.times do |i| %>
+          <%= select_tag "side_a[]",
+            options_from_collection_for_select(
+              players,
+              :id,
+              :name,
+              @court.side_players(:a)[i]&.id
+            ),
+            include_blank: true,
+            class: "w-full mb-2 bg-zinc-900 border border-zinc-700 rounded px-2 py-1" %>
+        <% end %>
+      </div>
+
+      <!-- SIDE B -->
+      <div>
+        <div class="text-zinc-400 mb-2">Side B</div>
+
+        <% 2.times do |i| %>
+          <%= select_tag "side_b[]",
+            options_from_collection_for_select(
+              players,
+              :id,
+              :name,
+              @court.side_players(:b)[i]&.id
+            ),
+            include_blank: true,
+            class: "w-full mb-2 bg-zinc-900 border border-zinc-700 rounded px-2 py-1" %>
+        <% end %>
+      </div>
+
+    </div>
+
+    <div class="flex justify-end gap-3 mt-6">
+
+      <%= link_to "Cancel",
+        courts_path,
+        class: "px-4 py-2 text-sm text-zinc-400 hover:underline" %>
+
+      <%= f.submit "Save Settings",
+        class: "bg-emerald-600 px-4 py-2 rounded text-white hover:bg-emerald-500" %>
+
+    </div>
+
+  <% end %>
+
+</div>
+

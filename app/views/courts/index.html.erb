@@ -39,6 +39,16 @@
           life_path(court),
           class: "text-xs bg-sky-600/20 text-sky-300 px-3 py-1 rounded-full hover:bg-sky-600/30" %>
       </div>
+      <div class="flex gap-2 items-center">
+        <%= form_with url: update_score_mode_court_path(court), method: :patch, class: "flex gap-2 items-center" do %>
+
+          <%= select_tag :score_mode, options_for_select( [["Americano", "americano"], ["International", "international"]], court.score_mode ), disabled: Rails.cache.read("court:#{court.id}:score")&.dig(:started), class: "bg-zinc-900 border border-zinc-700 text-sm rounded px-2 py-1" %>
+          <%= submit_tag "Save",
+            class: "text-xs bg-emerald-600 px-2 py-1 rounded hover:bg-emerald-500" %>
+        <% end %>
+      </div>
+
+      <%= link_to "⚙ Settings", edit_court_path(court),  class: "text-xs text-sky-400 hover:underline" %>
 
       <!-- Cameras -->
       <turbo-frame id="court_<%= court.id %>_cameras">
