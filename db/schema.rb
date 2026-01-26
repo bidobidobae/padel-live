@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_24_234713) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_26_015552) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -43,6 +43,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_24_234713) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "matches", force: :cascade do |t|
+    t.bigint "court_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "finished_at"
+    t.jsonb "result"
+    t.string "score_mode"
+    t.string "side_a"
+    t.string "side_b"
+    t.datetime "started_at"
+    t.datetime "updated_at", null: false
+    t.string "winner"
+    t.index ["court_id"], name: "index_matches_on_court_id"
+  end
+
   create_table "players", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name"
@@ -65,6 +79,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_24_234713) do
   add_foreign_key "cameras", "courts"
   add_foreign_key "court_players", "courts"
   add_foreign_key "court_players", "players"
+  add_foreign_key "matches", "courts"
   add_foreign_key "recordings", "cameras"
   add_foreign_key "recordings", "courts"
 end

@@ -1,0 +1,34 @@
+<div class="grid grid-cols-6 gap-2 py-3 border-b border-zinc-800 items-center">
+
+  <!-- Court -->
+  <div class="font-bold">
+    <%= match.court.number%>
+  </div>
+
+  <!-- Side A -->
+  <div class="<%= match.winner == 'a' ? 'text-emerald-400 font-bold' : '' %>">
+    <%= match.side_a %>
+  </div>
+
+  <!-- Side B -->
+  <div class="<%= match.winner == 'b' ? 'text-emerald-400 font-bold' : '' %>">
+    <%= match.side_b %>
+  </div>
+
+  <!-- Score -->
+  <div class="font-mono text-xl">
+    <%= match_score(match) %>
+  </div>
+
+  <!-- Winner -->
+  <div class="font-black uppercase">
+    SIDE <%= match.winner.upcase %>
+  </div>
+
+  <!-- Time -->
+  <div class="text-sm text-zinc-400">
+    <%= match.finished_at.strftime("%H:%M") %>
+  </div>
+
+</div>
+

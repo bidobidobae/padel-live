@@ -65,6 +65,8 @@ class LivesController < ApplicationController
       CameraRecorder.new(rec).stop!
     end
 
+    final_score = read_score(@court)
+    save_match_history!(@court, final_score)
     @score = ScoreState.default_for(@court)
 
     write_score(@court.id, @score)
@@ -92,6 +94,45 @@ class LivesController < ApplicationController
 
 
   private
+
+  def save_match_history!(court, score)
+    return if score[:winner].nil?
+
+    match = Match.create!(
+      court: court,
+      score_mode: court.score_mode,
+      side_a: court.side_label(:a),
+      side_b: court.side_label(:b),
+      winner: score[:winner],
+      result: build_result_payload(score, court),
+      started_at: score[:started_at],
+      finished_at: Time.current
+    )
+
+    Turbo::StreamsChannel.broadcast_prepend_to(
+      "match_history",
+      target: "history_list",
+      partial: "matches/match",
+      locals: { match: match }
+    )
+  end
+
+  def build_result_payload(score, court)
+    if court.score_mode == "international"
+      {
+        sets_a: score[:sets_a],
+        sets_b: score[:sets_b],
+        games_a: score[:games_a],
+        games_b: score[:games_b]
+      }
+    else
+      {
+        score_a: score[:a],
+        score_b: score[:b]
+      }
+    end
+  end
+
 
   def change_score(side, delta)
     @court = Court.find(params[:id])
