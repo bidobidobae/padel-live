@@ -8,6 +8,8 @@ class CourtsController < ApplicationController
   def create
     Court.destroy_all
 
+    ActiveRecord::Base.connection.reset_pk_sequence!('courts')
+
     params[:total].to_i.times do |i|
       Court.create!(
         number: i + 1,

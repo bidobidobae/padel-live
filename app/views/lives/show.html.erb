@@ -1,8 +1,20 @@
 <!-- app/views/lives/show.html.erb -->
-<div class="bg-zinc-900 min-h-screen">
-  <%= @court.score_mode.humanize + " Style"  %>
-  <%= turbo_stream_from "court_#{@court.id}" %>
 
-  <%= render "score", score: @score, court: @court %>
+<div class="relative min-h-screen">
+
+  <div class="absolute inset-0 bg-zinc-900/85 z-0"></div>
+
+  <div class="relative z-10 p-4">
+
+    <div class="text-sm text-zinc-400 mb-2">
+      <%= @court.score_mode.humanize + " Style" %>
+    </div>
+
+    <%= turbo_stream_from "court_#{@court.id}" %>
+
+    <%= render "score", score: @score, court: @court %>
+
+  </div>
+
 </div>
 

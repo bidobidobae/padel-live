@@ -1,19 +1,43 @@
 <%= form_with url: court_cameras_path(court),
-  data: { turbo_frame: "court_#{court.id}_cameras" },
-  class: "flex gap-2 mt-2" do %>
+  data: {
+    turbo_frame: "court_#{court.id}_cameras",
+    controller: "camera-form"
+  },
+  class: "flex gap-2 mt-2 items-center flex-wrap" do %>
 
-  <%= select_tag :camera_info,
-    grouped_options_for_select(
-      available_cameras.each_with_object({}) { |cam, h|
-        next if cam[:devices].blank?
-        h["#{cam[:name]} (#{cam[:uid]})"] =
-          cam[:devices].map { |dev| ["#{dev}", "#{cam[:uid]}|#{dev}"] }
-      }
-    ),
-    include_blank: "Select camera",
-    class: "bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-sm flex-1" %>
+  <!-- CAMERA TYPE -->
+  <%= select_tag :camera_type,
+    options_for_select([
+      ["USB Camera", "usb"],
+      ["IP Camera (RTSP)", "rtsp"]
+    ], "usb"),
+    data: { action: "change->camera-form#changeType" },
+    class: "bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-sm" %>
+
+  <!-- USB CAMERA SELECT -->
+  <div data-camera-form-target="usb">
+    <%= select_tag :camera_info,
+      grouped_options_for_select(
+        available_cameras.each_with_object({}) { |cam, h|
+          next if cam[:devices].blank?
+          h["#{cam[:name]} (#{cam[:uid]})"] =
+            cam[:devices].map { |dev| ["#{dev}", "#{cam[:uid]}|#{dev}"] }
+        }
+      ),
+      include_blank: "Select camera",
+      class: "bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-sm" %>
+  </div>
+
+  <!-- RTSP INPUT -->
+  <div data-camera-form-target="rtsp" class="hidden">
+    <%= text_field_tag :rtsp_url,
+      nil,
+      placeholder: "rtsp://user:pass@ip/stream",
+      class: "bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-sm w-64" %>
+  </div>
 
   <%= submit_tag "Add",
     class: "bg-emerald-600 hover:bg-emerald-500 text-white px-4 rounded text-sm" %>
+
 <% end %>
 

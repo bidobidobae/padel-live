@@ -10,16 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_26_015552) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_26_160739) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "cameras", force: :cascade do |t|
     t.boolean "active", default: true
+    t.string "camera_type", default: "usb"
     t.string "camera_uid", null: false
     t.bigint "court_id", null: false
     t.datetime "created_at", null: false
     t.string "device_path"
+    t.string "rtsp_url"
     t.datetime "updated_at", null: false
     t.index ["court_id"], name: "index_cameras_on_court_id"
   end

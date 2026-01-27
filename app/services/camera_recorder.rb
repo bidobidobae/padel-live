@@ -18,7 +18,8 @@ class CameraRecorder
 
     output = BASE_PATH.join(filename)
 
-    pid = spawn(ffmpeg_command(output))
+    cmd = ffmpeg_command(output)
+    pid = spawn(*cmd)
 
     Process.detach(pid)
 
@@ -69,16 +70,47 @@ class CameraRecorder
   # =========================
 
   def camera_available?
-    path = @camera.device_path
-    path.present? && File.exist?(path)
+    if @camera.usb?
+      @camera.device_path.present? && File.exist?(@camera.device_path)
+    else
+      @camera.rtsp_url.present?
+    end
   end
 
   private
 
   def ffmpeg_command(output)
-    "ffmpeg -y -f v4l2 -video_size 1920x1080 -i #{@camera.device_path} " \
-    "-c:v libx264 -movflags +frag_keyframe+empty_moov #{output}"
+    input = @camera.input_source
+
+    if @camera.usb?
+      [
+        "ffmpeg",
+        "-y",
+        "-f", "v4l2",
+        "-framerate", "30",
+        "-i", input,
+        "-c:v", "libx264",
+        "-preset", "veryfast",
+        "-pix_fmt", "yuv420p",
+        "-movflags", "+frag_keyframe+empty_moov",
+        output.to_s
+      ]
+    else
+      [
+        "ffmpeg",
+        "-y",
+        "-rtsp_transport", "tcp",
+        "-timeout", "5000000",
+        "-fflags", "nobuffer",
+        "-i", input,
+        "-c:v", "libx264",
+        "-preset", "veryfast",
+        "-movflags", "+frag_keyframe+empty_moov",
+        output.to_s
+      ]
+    end
   end
+
 
   def process_alive?(pid)
     Process.getpgid(pid)
