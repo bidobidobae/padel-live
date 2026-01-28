@@ -6,10 +6,6 @@
 
   <div class="relative z-10 p-4">
 
-    <div class="text-sm text-zinc-400 mb-2">
-      <%= @court.score_mode.humanize + " Style" %>
-    </div>
-
     <%= turbo_stream_from "court_#{@court.id}" %>
 
     <%= render "score", score: @score, court: @court %>

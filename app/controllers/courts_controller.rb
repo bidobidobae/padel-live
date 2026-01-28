@@ -67,8 +67,8 @@ class CourtsController < ApplicationController
         {
           "games_per_set" => raw["games_per_set"].to_i,
           "sets_to_win"   => raw["sets_to_win"].to_i,
-          "deuce"         => ActiveModel::Type::Boolean.new.cast(raw["deuce"]),
-          "advantage"     => ActiveModel::Type::Boolean.new.cast(raw["advantage"])
+          "deuce"         => raw.key?("deuce"),
+          "advantage"     => raw.key?("advantage")
         }
       end
 

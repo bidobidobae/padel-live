@@ -1,6 +1,7 @@
 # app/services/camera_recorder.rb
 class CameraRecorder
   BASE_PATH = Rails.root.join("storage/recordings")
+  WATERMARK_PATH = Rails.root.join("app/assets/images/scorio.png")
 
   def initialize(recording)
     @recording = recording
@@ -81,34 +82,28 @@ class CameraRecorder
 
   def ffmpeg_command(output)
     input = @camera.input_source
+    watermark = WATERMARK_PATH.to_s
+    filter = "[1:v][0:v]scale2ref=ih/4:ih/4[wm][base];[base][wm]overlay=W-w-20:20"
+
+    base = [
+      "ffmpeg",
+      "-y",
+      "-i", input,
+      "-i", watermark,
+      "-filter_complex", filter,
+      "-c:v", "libx264",
+      "-preset", "veryfast",
+      "-pix_fmt", "yuv420p",
+      "-movflags", "+frag_keyframe+empty_moov"
+    ]
 
     if @camera.usb?
-      [
-        "ffmpeg",
-        "-y",
-        "-f", "v4l2",
-        "-framerate", "30",
-        "-i", input,
-        "-c:v", "libx264",
-        "-preset", "veryfast",
-        "-pix_fmt", "yuv420p",
-        "-movflags", "+frag_keyframe+empty_moov",
-        output.to_s
-      ]
+      base.insert(2, "-f", "v4l2", "-framerate", "30")
     else
-      [
-        "ffmpeg",
-        "-y",
-        "-rtsp_transport", "tcp",
-        "-timeout", "5000000",
-        "-fflags", "nobuffer",
-        "-i", input,
-        "-c:v", "libx264",
-        "-preset", "veryfast",
-        "-movflags", "+frag_keyframe+empty_moov",
-        output.to_s
-      ]
+      base.insert(2, "-rtsp_transport", "tcp", "-timeout", "5000000", "-fflags", "nobuffer")
     end
+
+    base << output.to_s
   end
 
 

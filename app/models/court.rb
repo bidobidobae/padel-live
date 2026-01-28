@@ -18,12 +18,18 @@ class Court < ApplicationRecord
 
   def side_label(side)
     list = side_players(side)
-
     return "SIDE #{side.to_s.capitalize}" if list.empty?
-
     list.map do |player|
       format_player_name(player.name)
     end.join(" / ")
+  end
+
+  def side_label_br(side)
+    list = side_players(side)
+    return "SIDE #{side.to_s.capitalize}" if list.empty?
+    list.map do |player|
+      format_player_name(player.name)
+    end.join("</br>").html_safe
   end
 
   def format_player_name(name)

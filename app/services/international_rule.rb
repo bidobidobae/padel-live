@@ -8,14 +8,20 @@ class InternationalRule
 
     games_target = (settings["games_per_set"] || 6).to_i
     sets_target  = (settings["sets_to_win"] || 2).to_i
-    deuce_on     = settings["deuce"] != false
-    adv_on       = settings["advantage"] != false
+    deuce_on     = settings["deuce"] == true
+    adv_on       = settings["advantage"] == true
 
     other = side == :a ? :b : :a
 
     # ===== NORMAL POINT =====
     if score[side] < 40
       score[side] = POINTS[POINTS.index(score[side]) + 1]
+      return score
+    end
+
+    # ===== NO DEUCE (SUDDEN DEATH) =====
+    if !deuce_on && score[:a] == 40 && score[:b] == 40
+      win_game(score, side, games_target, sets_target)
       return score
     end
 

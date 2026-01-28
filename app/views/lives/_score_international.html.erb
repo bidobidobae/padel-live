@@ -1,16 +1,20 @@
 <div id="score" class="min-h-screen w-full ext-zinc-100 flex flex-col justify-center px-[3vw]">
-  <% if score[:started] %>
-    <div class="font-black text-emerald-400 animate-pulse mt-[2vh]"
-         style="font-size: 7vh;">
+  <div class="font-black text-emerald-400 animate-pulse mt-[2vh] text-center" style="font-size: 7vh;">
+    <% if score[:winner] %>
+      <%= court.side_label(score[:winner]) %> WIN 🏆
+    <% elsif court.score_settings["deuce"] == true &&
+             score[:a] == 40 &&
+             score[:b] == 40 &&
+             score[:advantage].nil? %>
+      DEUCE
+    <% elsif court.score_settings["advantage"] == true && score[:advantage].present? %>
+      ADVANTAGE — SIDE <%= score[:advantage].to_s.upcase %>
+    <% elsif score[:started] %>
       MATCH STARTED
-    </div>
-  <% else %>
-    <div class="font-black text-emerald-400 animate-pulse mt-[2vh]"
-         style="font-size: 7vh;">
+    <% else %>
       WAITING
-    </div>
-  <% end %>
-
+    <% end %>
+  </div>
 
   <!-- HEADER -->
   <div class="grid grid-cols-4 text-center border-b border-zinc-700 pb-[2vh] mb-[3vh] uppercase tracking-widest font-bold text-zinc-400"
@@ -28,7 +32,7 @@
 
     <div class="text-left pl-[1vw] font-extrabold text-sky-400"
          style="font-size: 6vh;">
-      <%= court.side_label(:a) %>
+      <%= court.side_label_br(:a) %>
     </div>
 
     <div class="text-center font-extrabold" style="font-size: 8vh;">
@@ -51,7 +55,7 @@
 
     <div class="text-left pl-[1vw] font-extrabold text-emerald-400"
          style="font-size: 6vh;">
-      <%= court.side_label(:b) %>
+      <%= court.side_label_br(:b) %>
     </div>
 
     <div class="text-center font-extrabold" style="font-size: 8vh;">
@@ -66,32 +70,6 @@
          style="font-size: 12vh;">
       <%= score[:b] %>
     </div>
-
-  </div>
-
-  <!-- STATUS -->
-  <div class="mt-[4vh] flex flex-col items-center gap-[2vh]">
-
-    <% if score[:a] == 40 && score[:b] == 40 && score[:winner].nil? %>
-      <div class="font-bold text-yellow-400 animate-pulse"
-           style="font-size: 5vh;">
-        DEUCE
-      </div>
-    <% end %>
-
-    <% if score[:advantage].present? %>
-      <div class="font-bold text-purple-400 animate-pulse"
-           style="font-size: 5vh;">
-        ADVANTAGE SIDE <%= score[:advantage].to_s.upcase %>
-      </div>
-    <% end %>
-
-    <% if score[:winner] %>
-      <div class="font-black text-emerald-400 animate-pulse mt-[2vh]"
-           style="font-size: 7vh;">
-        SIDE <%= score[:winner].to_s.upcase %> WIN 🏆
-      </div>
-    <% end %>
 
   </div>
 

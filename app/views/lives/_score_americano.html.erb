@@ -1,22 +1,17 @@
 <div id="score" class="flex flex-col items-center justify-center min-h-screen ext-zinc-100">
-  <% if score[:started] %>
+  <div class="font-black text-emerald-400 animate-pulse mt-[2vh]" style="font-size: 7vh;">
+
     <% if score[:winner] %>
-      <div class="font-black text-emerald-400 animate-pulse mt-[2vh]"
-           style="font-size: 7vh;">
-        MATCH END
-      </div>
+      <%= court.side_label(score[:winner]) %> WIN 🏆
+
+    <% elsif score[:started] %>
+      MATCH STARTED
+
     <% else %>
-      <div class="font-black text-emerald-400 animate-pulse mt-[2vh]"
-           style="font-size: 7vh;">
-        MATCH STARTED
-      </div>
-    <% end %>
-  <% else %>
-    <div class="font-black text-emerald-400 animate-pulse mt-[2vh]"
-         style="font-size: 7vh;">
       WAITING
-    </div>
-  <% end %>
+    <% end %>
+
+  </div>
 
   <div class="flex items-center w-full px-12">
 
@@ -55,18 +50,6 @@
     </div>
 
   </div>
-
-  <!-- WINNER -->
-  <% if score[:winner] %>
-    <div class="mt-[5vh] text-center animate-pulse">
-
-      <div class="font-bold text-emerald-400"
-           style="font-size: 6vh;">
-        SIDE <%= score[:winner].to_s.upcase %> WIN 🏆
-      </div>
-
-    </div>
-  <% end %>
 
 </div>
 
