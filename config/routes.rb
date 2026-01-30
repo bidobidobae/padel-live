@@ -28,8 +28,7 @@ Rails.application.routes.draw do
       post :point_a
       post :point_b
 
-      post :minus_a
-      post :minus_b
+      post :rollback
 
       post :back_to_score
     end

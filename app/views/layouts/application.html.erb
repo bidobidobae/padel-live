@@ -6,7 +6,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", type: "module" %>
   </head>
 
@@ -29,10 +29,7 @@
         </span>
       </div>
     </header>
-<main
-  class="relative min-h-screen bg-no-repeat bg-center bg-contain px-6 py-6"
-  style="background-image: url('<%= asset_path("scorio.png") %>');"
->
+    <main class="relative min-h-screen bg-no-repeat bg-center bg-contain px-6 py-6" style="background-image: url('<%= asset_path("scorio.png") %>');">
 
   <%= yield %>
 

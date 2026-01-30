@@ -1,5 +1,6 @@
 # app/controllers/lives_controller.rb
 class LivesController < ApplicationController
+  layout :resolve_layout
   skip_before_action :verify_authenticity_token
 
   def show
@@ -15,12 +16,23 @@ class LivesController < ApplicationController
     change_score(:b, +1)
   end
 
-  def minus_a
-    change_score(:a, -1)
-  end
+  def rollback
+    @court = Court.find(params[:id])
 
-  def minus_b
-    change_score(:b, -1)
+    with_score_lock(@court.id) do
+      score = read_score(@court)
+      return head :ok unless score[:started]
+
+      prev = pop_history(@court.id)
+      return head :ok if prev.nil?
+
+      write_score(@court.id, prev)
+      @score = prev
+
+      broadcast_score!
+    end
+
+    head :ok
   end
 
   def start
@@ -67,9 +79,10 @@ class LivesController < ApplicationController
 
     final_score = read_score(@court)
     save_match_history!(@court, final_score)
-    @score = ScoreState.default_for(@court)
 
+    @score = ScoreState.default_for(@court)
     write_score(@court.id, @score)
+    reset_history(@court.id)
 
     broadcast_score!
     head :ok
@@ -133,6 +146,26 @@ class LivesController < ApplicationController
     end
   end
 
+  def history_key(court_id)
+    "court:#{court_id}:history"
+  end
+
+  def push_history(court_id, score)
+    history = Rails.cache.read(history_key(court_id)) || []
+    history << Marshal.load(Marshal.dump(score)) # deep clone
+    Rails.cache.write(history_key(court_id), history.last(30)) # limit 30 step
+  end
+
+  def pop_history(court_id)
+    history = Rails.cache.read(history_key(court_id)) || []
+    last = history.pop
+    Rails.cache.write(history_key(court_id), history)
+    last
+  end
+
+  def reset_history(court_id)
+    Rails.cache.delete(history_key(court_id))
+  end
 
   def change_score(side, delta)
     @court = Court.find(params[:id])
@@ -145,6 +178,7 @@ class LivesController < ApplicationController
 
       last_recording = @court.recordings.where(active: true).order(created_at: :desc).first
 
+      push_history(@court.id, score)
       score = ScoreEngine.apply(
         score: score,
         court: @court,
@@ -218,6 +252,10 @@ class LivesController < ApplicationController
       locals: { recording: recording }
     )
   end
+
+    def resolve_layout
+      action_name == "show" ? "lives" : "application"
+    end
 
 end
 

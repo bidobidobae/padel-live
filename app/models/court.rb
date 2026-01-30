@@ -3,7 +3,7 @@ class Court < ApplicationRecord
   has_many :recordings, dependent: :destroy
   has_many :court_players, dependent: :destroy
   has_many :players, through: :court_players
-  has_many :match_histories
+  has_many :matches, dependent: :destroy
 
   after_commit :broadcast_live_score, on: [:update]
   after_initialize :set_default_score_config

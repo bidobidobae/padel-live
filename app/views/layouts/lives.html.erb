@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "SCORIO" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", type: "module" %>
+  </head>
+
+  <body class="bg-zinc-900 text-zinc-100 min-h-screen">
+    <main class="relative min-h-screen bg-no-repeat bg-center bg-contain px-6 py-6" style="background-image: url('<%= asset_path("scorio.png") %>');">
+    <%= yield %>
+  </body>
+</html>
+
